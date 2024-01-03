@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Jockey+One&display=swap"
+      rel="stylesheet"
+    />
+    <link href="./css/main.css" rel="stylesheet" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <div class="v1_7">
+      <div class="v1_9"></div>
+      <span class="v1_3">CLASIFICADOR DE ZAPATOS</span>
+      <div class="v1_8"></div>
+      <div class="v1_4">
+        <div class="div_centrado fondo_deg">
+          <div id="cont_webcam" class="div_centrado">
+            <div class="borde">
+              <video
+                id="webcam"
+                autoplay
+                playsinline
+                width="640"
+                height="480"
+              ></video>
+            </div>
+            <canvas id="canvas" width="640" height="480"></canvas>
+          </div>
+          <div id="mensaje" class=""></div>
+        </div>
+      </div>
+      <span class="v1_5">RESULTADO:</span
+      ><span class="v1_6" id="resultado">Sneaker</span>
+    </div>
+
+    <script>
+      "use strict";
+      document.getElementById("canvas").style.display = "none";
+      const video = document.getElementById("webcam");
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+      let model = null;
+
+      class L2 {
+        static className = "L2";
+        constructor(config) {
+          return tf.regularizers.l1l2(config);
+        }
+      }
+      tf.serialization.registerClass(L2);
+
+      (async () => {
+        console.log("Cargando modelo...");
+        model = await tf.loadLayersModel("modelo_convertido/model.json");
+        console.log("Modelo cargado");
+        detectWebcam();
+      })();
+
+      const constraints = {
+        audio: false,
+        video: {
+          width: 640,
+          height: 480,
+        },
+      };
+
+      async function detectWebcam() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia(
+            constraints
+          );
+          handleSuccess(stream);
+        } catch (e) {
+          $("#mensaje").html("No se puede acceder a la cámara");
+        }
+      }
+
+      function handleSuccess(stream) {
+        window.stream = stream;
+        video.srcObject = stream;
+        classifyFrame();
+      }
+
+      async function classifyFrame() {
+        while (true) {
+          const predictions = await classify();
+          updateResult(predictions);
+          await tf.nextFrame();
+        }
+      }
+
+      async function classify() {
+        const imageCapture = new ImageCapture(window.stream.getVideoTracks()[0]);
+        const img = await imageCapture.grabFrame();
+        context.drawImage(img, 0, 0, 640, 480);
+
+        // Preprocess the image (you may need to adjust this based on your model)
+        const tensor = tf.browser
+          .fromPixels(canvas)
+          .resizeBilinear([224, 224])
+          .toFloat()
+          .expandDims();
+
+        // Make predictions
+        const predictions = await model.predict(tensor).data();
+
+        return predictions;
+      }
+
+      function updateResult(predictions) {
+        // Map predictions to labels
+        const labels = ["Botas", "Casual", "Deportivo", "Sandalia", "Tacon"];
+        const maxPredictionIndex = predictions.indexOf(
+          Math.max(...predictions)
+        );
+        const resultLabel = labels[maxPredictionIndex];
+
+        // Display result label on the webpage
+        document.getElementById("resultado").innerText = resultLabel;
+      }
+    </script>
+  </body>
+</html>
