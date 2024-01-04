@@ -1,8 +1,10 @@
 document.getElementById("canvas").style.display = "none";
 const video = document.getElementById("webcam");
 const canvas = document.getElementById("canvas");
-const context = canvas.getContext("2d");
-const btn_clasificar = document.getElementById('btn_clasificar');
+const imageContainer = document.getElementById("imageContainer");
+const capturedImage = document.getElementById("capturedImage");
+const btnClasificar = document.getElementById('btn_clasificar');
+const btnNuevo = document.getElementById('btn_nuevo');
 
 let model = null;
 
@@ -18,7 +20,7 @@ tf.serialization.registerClass(L2);
     console.log("Cargando modelo...");
     model = await tf.loadLayersModel("modelo/model.json");
     console.log("Modelo cargado");
-    detectWebcam();
+    await detectWebcam();
 })();
 
 const constraints = {
@@ -28,62 +30,81 @@ const constraints = {
 
 async function detectWebcam() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia(
-            constraints
-        );
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         handleSuccess(stream);
+        btnClasificar.addEventListener('click', classifyAndShowImage);
+        btnNuevo.addEventListener('click', resetUI);
     } catch (e) {
-        $("#mensaje").html("No se puede acceder a la cámara");
+        document.getElementById("mensaje").innerHTML = "No se puede acceder a la cámara";
     }
 }
 
 function handleSuccess(stream) {
     window.stream = stream;
     video.srcObject = stream;
-    //classifyFrame();
 }
 
-btn_clasificar.addEventListener('click', function() {
-    classifyFrame();
-});
+async function classifyAndShowImage() {
+    const predictions = await classifyFrame();
+    updateResult(predictions);
 
+    const imageCapture = new ImageCapture(window.stream.getVideoTracks()[0]);
+    const img = await imageCapture.grabFrame();
+    const blob = await createImageBlob(img); // Nueva función para obtener el blob de la imagen
+    capturedImage.src = URL.createObjectURL(blob);
+    imageContainer.style.display = "block";
+    video.style.display = "none";
 
+    btnClasificar.style.display = "none";
+    btnNuevo.style.display = "block";
+}
+
+function resetUI() {
+    imageContainer.style.display = "none";
+    video.style.display = "block";
+    btnClasificar.style.display = "block";
+    btnNuevo.style.display = "none";
+    capturedImage.src = "";
+    document.getElementById("resultado").innerText = "----------";
+}
 
 async function classifyFrame() {
-    // while (true) {
-        const predictions = await classify();
-        updateResult(predictions);
-        await tf.nextFrame();
-    // }
+    const predictions = await classify();
+    await tf.nextFrame();
+    return predictions;
 }
 
 async function classify() {
     const imageCapture = new ImageCapture(window.stream.getVideoTracks()[0]);
     const img = await imageCapture.grabFrame();
+    const context = canvas.getContext("2d");
     context.drawImage(img, 0, 0, 640, 480);
-    
 
-    // Preprocess the image (you may need to adjust this based on your model)
     const tensor = tf.browser
         .fromPixels(canvas)
         .resizeBilinear([224, 224])
         .toFloat()
         .expandDims();
 
-    // Make predictions
     const predictions = await model.predict(tensor).data();
-
     return predictions;
 }
 
 function updateResult(predictions) {
-    // Map predictions to labels
     const labels = ["Botas", "Casual", "Deportivo", "Sandalia", "Tacon"];
-    const maxPredictionIndex = predictions.indexOf(
-        Math.max(...predictions)
-    );
+    const maxPredictionIndex = predictions.indexOf(Math.max(...predictions));
     const resultLabel = labels[maxPredictionIndex];
-
-    // Display result label on the webpage
     document.getElementById("resultado").innerText = resultLabel;
+}
+
+// Nueva función para obtener el blob de la imagen
+function createImageBlob(image) {
+    return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        const context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0, image.width, image.height);
+        canvas.toBlob(resolve, 'image/png');
+    });
 }

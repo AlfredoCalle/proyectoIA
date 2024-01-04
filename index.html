@@ -1,48 +1,35 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CodePen - Modern Card Responsive</title>
   <link rel="stylesheet" href="./style/style.css">
-
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
-<!--
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
--->
-<!-- partial:index.partial.html -->
 <div class="wrapper" id="app">
-      <div class="card-form">
-        <div class="card-list">
-          <div class="card-item -front">
-            <div class="card-item__side">
-              <video id="webcam" autoplay playsinline></video>
-              <canvas id="canvas"></canvas>
-            </div>
+  <div class="card-form">
+    <div class="card-list">
+      <div class="card-item -front">
+        <div class="card-item__side">
+          <video id="webcam" autoplay playsinline></video>
+          <canvas id="canvas"></canvas>
+          <div id="imageContainer" style="display: none;">
+            <img id="capturedImage" style="max-width: 100%;" alt="Captured Image">
           </div>
         </div>
-        <div id="mensaje" class=""></div>
-        <div class="card-form__inner">
-          <h3 style="font-size: 30px; margin: 15px;">TIPO</h3>
-          <p style="font-size: 40px; margin: 20px;" id="resultado">Sneaker</p>
-          <!--
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-          -->
-          <button class="card-form__button" id="btn_clasificar">Clasificar</button>
-        </div>
       </div>
-
     </div>
-<!-- partial -->\
-<!--
-<script>
-  "use strict";
-  
-</script>
--->
+    <div id="mensaje" class=""></div>
+    <div class="card-form__inner">
+      <h3 style="font-size: 30px; margin: 15px;">TIPO</h3>
+      <p style="font-size: 40px; margin: 20px;" id="resultado">----------</p>
+      <button class="card-form__button" id="btn_clasificar">Clasificar</button>
+      <button class="card-form__button" id="btn_nuevo" style="display: none;">Nuevo</button>
+    </div>
+  </div>
+</div>
 <script src="./script/script.js"></script>
-
 </body>
 </html>
