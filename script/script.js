@@ -23,13 +23,16 @@ tf.serialization.registerClass(L2);
     await detectWebcam();
 })();
 
-const constraints = {
-    audio: false,
-    video: true
-};
-
 async function detectWebcam() {
     try {
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        let constraints = {
+            audio: false,
+            video: {
+                facingMode: isMobile ? "environment" : "user"
+            }
+        };
+
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         handleSuccess(stream);
         btnClasificar.addEventListener('click', classifyAndShowImage);
@@ -50,7 +53,7 @@ async function classifyAndShowImage() {
 
     const imageCapture = new ImageCapture(window.stream.getVideoTracks()[0]);
     const img = await imageCapture.grabFrame();
-    const blob = await createImageBlob(img); // Nueva función para obtener el blob de la imagen
+    const blob = await createImageBlob(img);
     capturedImage.src = URL.createObjectURL(blob);
     imageContainer.style.display = "block";
     video.style.display = "none";
@@ -65,7 +68,6 @@ function resetUI() {
     btnClasificar.style.display = "block";
     btnNuevo.style.display = "none";
     capturedImage.src = "";
-    document.getElementById("resultado").innerText = "----------";
 }
 
 async function classifyFrame() {
@@ -97,7 +99,6 @@ function updateResult(predictions) {
     document.getElementById("resultado").innerText = resultLabel;
 }
 
-// Nueva función para obtener el blob de la imagen
 function createImageBlob(image) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
