@@ -57,7 +57,7 @@ async function classifyAndShowImage() {
     capturedImage.src = URL.createObjectURL(blob);
     imageContainer.style.display = "block";
     video.style.display = "none";
-
+    
     btnClasificar.style.display = "none";
     btnNuevo.style.display = "block";
 }
@@ -68,6 +68,7 @@ function resetUI() {
     btnClasificar.style.display = "block";
     btnNuevo.style.display = "none";
     capturedImage.src = "";
+    document.getElementById("resultado").innerText = "----------";
 }
 
 async function classifyFrame() {
