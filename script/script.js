@@ -26,12 +26,15 @@ tf.serialization.registerClass(L2);
 async function detectWebcam() {
     try {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        console.log(navigator.userAgent);
         let constraints = {
             audio: false,
-            video: {
-                facingMode: isMobile ? "environment" : "user"
-            }
+            video: {}
         };
+
+        if (isMobile) {
+            constraints.video.facingMode = { exact: "environment" };
+        } 
 
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
         handleSuccess(stream);
@@ -41,6 +44,7 @@ async function detectWebcam() {
         document.getElementById("mensaje").innerHTML = "No se puede acceder a la cámara";
     }
 }
+
 
 function handleSuccess(stream) {
     window.stream = stream;
