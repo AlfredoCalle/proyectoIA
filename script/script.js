@@ -45,7 +45,6 @@ async function detectWebcam() {
     }
 }
 
-
 function handleSuccess(stream) {
     window.stream = stream;
     video.srcObject = stream;
@@ -56,15 +55,26 @@ async function classifyAndShowImage() {
     updateResult(predictions);
 
     const imageCapture = new ImageCapture(window.stream.getVideoTracks()[0]);
-    const img = await imageCapture.grabFrame();
-    const blob = await createImageBlob(img);
-    capturedImage.src = URL.createObjectURL(blob);
+    const originalImage = await imageCapture.grabFrame();
+
+    // Mostrar la imagen original en el contenedor
+    capturedImage.src = URL.createObjectURL(await createImageBlob(originalImage));
     imageContainer.style.display = "block";
     video.style.display = "none";
     
     btnClasificar.style.display = "none";
     btnNuevo.style.display = "block";
+
+    // Convertir la imagen original a blanco y negro con umbral de 125
+    const grayScaleImage = convertToGrayScale(originalImage, 125);
+
+    // Redimensionar la imagen
+    const resizedImage = await resizeImage(grayScaleImage, 224, 224);
+
+    // Descargar la imagen en blanco y negro redimensionada
+    // downloadImage(resizedImage, "captured_image.png");
 }
+
 
 function resetUI() {
     imageContainer.style.display = "none";
@@ -77,15 +87,19 @@ function resetUI() {
 
 async function classifyFrame() {
     const predictions = await classify();
-    await tf.nextFrame();
+    updateResult(predictions);
     return predictions;
 }
 
 async function classify() {
     const imageCapture = new ImageCapture(window.stream.getVideoTracks()[0]);
     const img = await imageCapture.grabFrame();
+
+    // Convertir la imagen a blanco y negro con umbral de 125
+    const grayScaleImage = convertToGrayScale(img, 125);
+
     const context = canvas.getContext("2d");
-    context.drawImage(img, 0, 0, 640, 480);
+    context.drawImage(grayScaleImage, 0, 0, 640, 480);
 
     const tensor = tf.browser
         .fromPixels(canvas)
@@ -117,9 +131,39 @@ function updateResult(predictions) {
     document.getElementById("resultado").innerText = resultLabel;
 }
 
+function convertToGrayScale(image, threshold) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = image.width;
+    canvas.height = image.height;
+    context.drawImage(image, 0, 0, image.width, image.height);
 
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
 
-function createImageBlob(image) {
+    for (let i = 0; i < data.length; i += 4) {
+        const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        const color = brightness > threshold ? 255 : 0;
+
+        data[i] = color;
+        data[i + 1] = color;
+        data[i + 2] = color;
+    }
+
+    context.putImageData(imageData, 0, 0);
+    return canvas;
+}
+
+async function resizeImage(image, width, height) {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = width;
+    canvas.height = height;
+    context.drawImage(image, 0, 0, width, height);
+    return canvas;
+}
+
+async function createImageBlob(image) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         canvas.width = image.width;
@@ -128,4 +172,11 @@ function createImageBlob(image) {
         context.drawImage(image, 0, 0, image.width, image.height);
         canvas.toBlob(resolve, 'image/png');
     });
+}
+
+function downloadImage(image, filename) {
+    const link = document.createElement('a');
+    link.href = image.toDataURL('image/png');
+    link.download = filename;
+    link.click();
 }
