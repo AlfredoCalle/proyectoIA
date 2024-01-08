@@ -98,11 +98,26 @@ async function classify() {
 }
 
 function updateResult(predictions) {
-    const labels = ["Botas", "Casual", "Deportivo", "Sandalia", "Tacon"];
+    const labels = ["Bailarina", "Deportivos", "Formales", "Mocasines", "Plataformas", "Sandalias", "Tacones"];
+    
+    // Sumar todas las predicciones para obtener el total
+    const totalPredictions = predictions.reduce((acc, val) => acc + val, 0);
+
+    // Calcular y mostrar el porcentaje para cada clase
+    for (let i = 0; i < predictions.length; i++) {
+        const resultPercentage = ((predictions[i] / totalPredictions) * 100).toFixed(2);
+        console.log(`Etiqueta: ${labels[i]}, Porcentaje: ${resultPercentage}%`);
+    }
+
+    // Obtener la clase con la mayor predicción
     const maxPredictionIndex = predictions.indexOf(Math.max(...predictions));
     const resultLabel = labels[maxPredictionIndex];
+
+    // Mostrar la etiqueta de la clase con mayor predicción
     document.getElementById("resultado").innerText = resultLabel;
 }
+
+
 
 function createImageBlob(image) {
     return new Promise((resolve) => {
