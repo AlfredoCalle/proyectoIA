@@ -99,23 +99,37 @@ async function classify() {
 
 function updateResult(predictions) {
     const labels = ["Bailarina", "Deportivos", "Formales", "Mocasines", "Plataformas", "Sandalias", "Tacones"];
-    
+    var dic_resultado = {}; 
     // Sumar todas las predicciones para obtener el total
     const totalPredictions = predictions.reduce((acc, val) => acc + val, 0);
 
     // Calcular y mostrar el porcentaje para cada clase
     for (let i = 0; i < predictions.length; i++) {
-        const resultPercentage = ((predictions[i] / totalPredictions) * 100).toFixed(2);
+        const resultPercentage = ((predictions[i] / totalPredictions) * 100);
         console.log(`Etiqueta: ${labels[i]}, Porcentaje: ${resultPercentage}%`);
+        dic_resultado[labels[i]] = resultPercentage;
     }
 
     // Obtener la clase con la mayor predicción
     const maxPredictionIndex = predictions.indexOf(Math.max(...predictions));
     const resultLabel = labels[maxPredictionIndex];
-
+    
+    //Ordenar diccionario
+    // const entries = Object.entries(dic_resultado);
+    // entries.sort((a, b) => b[1] - a[1]);
+    const sortedObject = Object.entries(dic_resultado).sort((a, b) => b[1] - a[1]);
+    const topThreeLabels = sortedObject.slice(0, 3);
+    const resultElement = document.getElementById("resultado");
+    resultElement.innerHTML = "";
+    for (let i = 0; i < topThreeLabels.length; i++) {
+        const [key, value] = topThreeLabels[i];
+        // Utilizar toFixed(4) para mostrar el valor con 4 decimales
+        resultElement.innerHTML += `${key}: ${value.toFixed(2)}%<br>`;
+    }    
     // Mostrar la etiqueta de la clase con mayor predicción
-    document.getElementById("resultado").innerText = resultLabel;
+    // document.getElementById("resultado").innerText = resultLabel;
 }
+
 
 
 
