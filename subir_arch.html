@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Jockey+One&display=swap"
+      rel="stylesheet"
+    />
+    <title>Clasificador de zapatos</title>
+    <link rel="stylesheet" href="./style/style2.css">
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <div class="wrapper" id="app">
+      <div class="card-form">
+        <canvas id="canvas"></canvas>
+        <div class="card-form__inner">
+          <h2 style="font-size: 40px; margin-bottom: 30px;">SUBIR IMAGEN</h2>
+          <input type="file" id="imagen" name="imagen" accept="image/png, image/jpeg" />
+          <div id="imagen-preview" style="margin-top: 20px;">
+            <img id="imagen-seleccionada" style="max-width: 100%;" />
+          </div>          
+          <h3 style="font-size: 30px; margin: 15px;">RESULTADO</h3>
+          <p style="font-size: 40px; margin: 20px;" id="resultado">----------</p>
+          <button class="card-form__button" id="btn_clasificar">Clasificar</button>
+          <a href="index.html">Capturar en cámara</a>
+        </div>
+      </div>
+    </div>
+    <script src="./script/script2.js"></script>
+  </body>
+</html>

@@ -86,7 +86,6 @@ async function classify() {
     const img = await imageCapture.grabFrame();
     const context = canvas.getContext("2d");
     context.drawImage(img, 0, 0, 640, 480);
-
     const tensor = tf.browser
         .fromPixels(canvas)
         .resizeBilinear([224, 224])
