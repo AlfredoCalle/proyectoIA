@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 (async () => {
     console.log("Cargando modelo...");
-    model = await tf.loadLayersModel("modelo/model.json");
+    model = await tf.loadLayersModel("modelo2/model.json");
     console.log("Modelo cargado");
 })();
 
@@ -94,7 +94,8 @@ async function classifyAndShowImage() {
 }
 
 function updateResult(predictions) {
-    const labels = ["Bailarina", "Deportivos", "Formales", "Mocasines", "Plataformas", "Sandalias", "Tacones"];
+    // const labels = ["Bailarina", "Deportivos", "Formales", "Mocasines", "Plataformas", "Sandalias", "Tacones"];
+    const labels = ["Bailarina", "Mocasines", "Formales", "Suecos", "Deportivos"];
     var dic_resultado = {}; 
     // Sumar todas las predicciones para obtener el total
     const totalPredictions = predictions.reduce((acc, val) => acc + val, 0);
