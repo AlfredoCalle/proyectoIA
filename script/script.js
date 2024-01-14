@@ -58,16 +58,14 @@ async function classifyAndShowImage() {
     const img = await imageCapture.grabFrame();
 
     const canvas = document.createElement('canvas');
-    canvas.width = 640;
-    canvas.height = 480;
+    canvas.width = img.width;  // Use actual width of the captured image
+    canvas.height = img.height;  // Use actual height of the captured image
     const context = canvas.getContext('2d');
-    context.drawImage(img, 0, 0, 640, 480);
+    context.drawImage(img, 0, 0, img.width, img.height);
 
-    capturedImage.src = canvas.toDataURL(); // Muestra la imagen capturada en el elemento 'capturedImage'
-
+    capturedImage.src = canvas.toDataURL();
     imageContainer.style.display = "block";
     video.style.display = "none";
-
     btnClasificar.style.display = "none";
     btnNuevo.style.display = "block";
 }
@@ -92,10 +90,10 @@ async function classify() {
     const img = await imageCapture.grabFrame();
 
     const canvas = document.createElement('canvas');
-    canvas.width = 640;
-    canvas.height = 480;
+    canvas.width = img.width;  // Use actual width of the captured image
+    canvas.height = img.height;  // Use actual height of the captured image
     const context = canvas.getContext('2d');
-    context.drawImage(img, 0, 0, 640, 480);
+    context.drawImage(img, 0, 0, img.width, img.height);
 
     const tensor = tf.browser
         .fromPixels(canvas)
