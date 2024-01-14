@@ -18,7 +18,7 @@ tf.serialization.registerClass(L2);
 
 (async () => {
     console.log("Cargando modelo...");
-    model = await tf.loadLayersModel("modelo2/model.json");
+    model = await tf.loadLayersModel("modelo/model.json");
     console.log("Modelo cargado");
     await detectWebcam();
 })();
