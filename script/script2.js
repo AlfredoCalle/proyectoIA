@@ -57,36 +57,44 @@ async function classifyFrame() {
 
 
 async function classify() {
-    const archivo = inputImagen.files[0];
-    
-    if (!archivo) {
-      // Manejar el caso en el que no se ha seleccionado ningún archivo
-      console.error('No se ha seleccionado ninguna imagen.');
-      return;
-    }
+  const archivo = inputImagen.files[0];
 
-    const imagen = new Image();
-    imagen.src = URL.createObjectURL(archivo);
-
-    await new Promise(resolve => {
-      imagen.onload = resolve;
-    });
-
-    const canvas = document.createElement('canvas');
-    canvas.width = 640;
-    canvas.height = 480;
-    const context = canvas.getContext('2d');
-    context.drawImage(imagen, 0, 0, 640, 480);
-
-    const tensor = tf.browser
-      .fromPixels(canvas)
-      .resizeBilinear([224, 224])
-      .toFloat()
-      .expandDims();
-
-    const predictions = await model.predict(tensor).data();
-    return predictions;
+  if (!archivo) {
+    // Manejar el caso en el que no se ha seleccionado ningún archivo
+    console.error('No se ha seleccionado ninguna imagen.');
+    return;
   }
+
+  const imagen = new Image();
+  imagen.src = URL.createObjectURL(archivo);
+
+  await new Promise(resolve => {
+    imagen.onload = resolve;
+  });
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 640;
+  canvas.height = 480;
+  const context = canvas.getContext('2d');
+  
+  // Limpiar el canvas antes de dibujar la nueva imagen
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  context.drawImage(imagen, 0, 0, 640, 480);
+
+  const tensor = tf.browser
+  .fromPixels(canvas)
+  .toFloat()
+  .div(tf.scalar(255.0))  // Normalización
+  .resizeBilinear([224, 224])
+  .expandDims();
+
+  // Obtener las predicciones del modelo directamente
+  const logits = await model.predict(tensor);
+  const predictions = logits.dataSync();
+
+  return predictions;
+}
 
 async function classifyAndShowImage() {
     const predictions = await classifyFrame();
