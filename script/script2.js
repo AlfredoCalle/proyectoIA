@@ -116,15 +116,8 @@ function updateResult(predictions) {
     // entries.sort((a, b) => b[1] - a[1]);
     const sortedObject = Object.entries(dic_resultado).sort((a, b) => b[1] - a[1]);
     const topThreeLabels = sortedObject.slice(0, 3);
-    const resultElement = document.getElementById("resultado");
-    resultElement.innerHTML = "";
-    for (let i = 0; i < topThreeLabels.length; i++) {
-        const [key, value] = topThreeLabels[i];
-        // Utilizar toFixed(4) para mostrar el valor con 4 decimales
-        resultElement.innerHTML += `${key}: ${value.toFixed(2)}%<br>`;
-    }    
-    // Mostrar la etiqueta de la clase con mayor predicción
-    // document.getElementById("resultado").innerText = resultLabel;
+    
+    mostrarResultados(topThreeLabels)
 }
 
 
@@ -163,3 +156,34 @@ function readImage(archivo) {
 
   });
 
+// Barras de progreso
+function mostrarResultados(labels) {
+  const [key1, value1] = labels[0];
+  let porcentaje1 = value1.toFixed(2)
+  const [key2, value2] = labels[1];
+  let porcentaje2 = value2.toFixed(2)
+  const [key3, value3] = labels[2];
+  let porcentaje3 = value3.toFixed(2)
+
+  document.getElementById('clasificador_contenedor').innerHTML = `
+    <label  for="progress1" style="font-size: 40px; margin: 20px;">${key1}</label>
+    <progress id="progress1" class="progress-bar" value="${porcentaje1}" max="100" style="height: 30px;">${porcentaje1}%</progress>
+    <label  for="progress1" style="font-size: 25px;">${porcentaje1}%</label>
+    <br>
+
+    <label for="progress2" style="font-size: 40px; margin: 20px;">${key2}</label>
+    <progress id="progress2" class="progress-bar" value="${porcentaje2}" max="100" style="height: 30px;">${porcentaje2}%</progress>
+    <label for="progress2" style="font-size: 25px;">${porcentaje2}%</label>
+    <br>
+
+    <label for="progress3" style="font-size: 40px; margin: 20px;">${key3}</label>
+    <progress id="progress3" class="progress-bar" value="${porcentaje3}" max="100" style="height: 30px;">${porcentaje3}%</progress>
+    <label for="progress3" style="font-size: 25px;">${porcentaje3}%</label>
+    `;
+}
+
+function quitarResultados() {
+  document.getElementById('clasificador_contenedor').innerHTML = `
+  <p style="font-size: 40px; margin: 20px;" id="resultado">----------</p>
+`;
+}

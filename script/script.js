@@ -71,12 +71,13 @@ async function classifyAndShowImage() {
 }
 
 function resetUI() {
+    quitarResultados()
     imageContainer.style.display = "none";
     video.style.display = "block";
     btnClasificar.style.display = "block";
     btnNuevo.style.display = "none";
     capturedImage.src = "";
-    document.getElementById("resultado").innerText = "----------";
+    // document.getElementById("resultado").innerText = "----------";
 }
 
 async function classifyFrame() {
@@ -86,6 +87,8 @@ async function classifyFrame() {
 }
 
 async function classify() {
+    activarLoader();
+
     const imageCapture = new ImageCapture(window.stream.getVideoTracks()[0]);
     const img = await imageCapture.grabFrame();
 
@@ -94,6 +97,8 @@ async function classify() {
     canvas.height = img.height;  // Use actual height of the captured image
     const context = canvas.getContext('2d');
     context.drawImage(img, 0, 0, img.width, img.height);
+
+    desactivarLoader();
 
     const tensor = tf.browser
         .fromPixels(canvas)
@@ -118,12 +123,29 @@ function updateResult(predictions) {
 
     const sortedObject = Object.entries(dic_resultado).sort((a, b) => b[1] - a[1]);
     const topThreeLabels = sortedObject.slice(0, 3);
-    const resultElement = document.getElementById("resultado");
-    resultElement.innerHTML = "";
-    for (let i = 0; i < topThreeLabels.length; i++) {
-        const [key, value] = topThreeLabels[i];
-        resultElement.innerHTML += `${key}: ${value.toFixed(2)}%<br>`;
-    }
+    
+    mostrarResultados(topThreeLabels)
+
+    //Antes
+
+    // const labels = ["Bailarina", "Mocasines", "Formales", "Suecos", "Deportivos"];
+    // var dic_resultado = {};
+    // const totalPredictions = predictions.reduce((acc, val) => acc + val, 0);
+
+    // for (let i = 0; i < predictions.length; i++) {
+    //     const resultPercentage = (predictions[i] / totalPredictions) * 100;
+    //     console.log(`Etiqueta: ${labels[i]}, Porcentaje: ${resultPercentage}%`);
+    //     dic_resultado[labels[i]] = resultPercentage;
+    // }
+
+    // const sortedObject = Object.entries(dic_resultado).sort((a, b) => b[1] - a[1]);
+    // const topThreeLabels = sortedObject.slice(0, 3);
+    // const resultElement = document.getElementById("resultado");
+    // resultElement.innerHTML = "";
+    // for (let i = 0; i < topThreeLabels.length; i++) {
+    //     const [key, value] = topThreeLabels[i];
+    //     resultElement.innerHTML += `${key}: ${value.toFixed(2)}%<br>`;
+    // }
 }
 
 function createImageBlob(image) {
@@ -135,4 +157,48 @@ function createImageBlob(image) {
         context.drawImage(image, 0, 0, image.width, image.height);
         canvas.toBlob(resolve, 'image/png');
     });
+}
+
+// Loader
+
+function activarLoader() {
+    document.getElementById("resultado").innerText = "No mover el dispositivo mientras se captura el calzado";
+    document.getElementById("titulo_resultado").innerText = "CAPTURANDO...";
+}
+
+function desactivarLoader() {
+    document.getElementById("titulo_resultado").innerText = "RESULTADO";
+}
+
+
+// Barras de progreso
+function mostrarResultados(labels) {
+    const [key1, value1] = labels[0];
+    let porcentaje1 = value1.toFixed(2)
+    const [key2, value2] = labels[1];
+    let porcentaje2 = value2.toFixed(2)
+    const [key3, value3] = labels[2];
+    let porcentaje3 = value3.toFixed(2)
+
+    document.getElementById('clasificador_contenedor').innerHTML = `
+    <label  for="progress1" style="font-size: 40px; margin: 20px;">${key1}</label>
+    <progress id="progress1" class="progress-bar" value="${porcentaje1}" max="100" style="height: 30px;">${porcentaje1}%</progress>
+    <label  for="progress1" style="font-size: 25px;">${porcentaje1}%</label>
+    <br>
+
+    <label for="progress2" style="font-size: 40px; margin: 20px;">${key2}</label>
+    <progress id="progress2" class="progress-bar" value="${porcentaje2}" max="100" style="height: 30px;">${porcentaje2}%</progress>
+    <label for="progress2" style="font-size: 25px;">${porcentaje2}%</label>
+    <br>
+
+    <label for="progress3" style="font-size: 40px; margin: 20px;">${key3}</label>
+    <progress id="progress3" class="progress-bar" value="${porcentaje3}" max="100" style="height: 30px;">${porcentaje3}%</progress>
+    <label for="progress3" style="font-size: 25px;">${porcentaje3}%</label>
+    `;
+}
+
+function quitarResultados() {
+    document.getElementById('clasificador_contenedor').innerHTML = `
+    <p style="font-size: 40px; margin: 20px;" id="resultado">----------</p>
+`;
 }
