@@ -26,7 +26,6 @@ tf.serialization.registerClass(L2);
 async function detectWebcam() {
     try {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        console.log(navigator.userAgent);
         let constraints = {
             audio: false,
             video: {}
@@ -58,8 +57,8 @@ async function classifyAndShowImage() {
     const img = await imageCapture.grabFrame();
 
     const canvas = document.createElement('canvas');
-    canvas.width = img.width;  // Use actual width of the captured image
-    canvas.height = img.height;  // Use actual height of the captured image
+    canvas.width = img.width;
+    canvas.height = img.height;
     const context = canvas.getContext('2d');
     context.drawImage(img, 0, 0, img.width, img.height);
 
@@ -77,7 +76,6 @@ function resetUI() {
     btnClasificar.style.display = "block";
     btnNuevo.style.display = "none";
     capturedImage.src = "";
-    // document.getElementById("resultado").innerText = "----------";
 }
 
 async function classifyFrame() {
@@ -93,8 +91,8 @@ async function classify() {
     const img = await imageCapture.grabFrame();
 
     const canvas = document.createElement('canvas');
-    canvas.width = img.width;  // Use actual width of the captured image
-    canvas.height = img.height;  // Use actual height of the captured image
+    canvas.width = img.width;
+    canvas.height = img.height;
     const context = canvas.getContext('2d');
     context.drawImage(img, 0, 0, img.width, img.height);
 
@@ -103,11 +101,10 @@ async function classify() {
     const tensor = tf.browser
     .fromPixels(canvas)
     .toFloat()
-    .div(tf.scalar(255.0))  // Normalización
+    .div(tf.scalar(255.0)) 
     .resizeBilinear([224, 224])
     .expandDims();
   
-    // Obtener las predicciones del modelo directamente
     const logits = await model.predict(tensor);
     const predictions = logits.dataSync();
   
@@ -121,7 +118,6 @@ function updateResult(predictions) {
 
     for (let i = 0; i < predictions.length; i++) {
         const resultPercentage = (predictions[i] / totalPredictions) * 100;
-        console.log(`Etiqueta: ${labels[i]}, Porcentaje: ${resultPercentage}%`);
         dic_resultado[labels[i]] = resultPercentage;
     }
 
