@@ -174,19 +174,43 @@ function mostrarResultados(labels) {
   let porcentaje3 = value3.toFixed(2)
 
   document.getElementById('clasificador_contenedor').innerHTML = `
-    <label  for="progress1" style="font-size: 40px; margin: 20px;">${key1}</label>
-    <progress id="progress1" class="progress-bar" value="${porcentaje1}" max="100" style="height: 30px;">${porcentaje1}%</progress>
-    <label  for="progress1" style="font-size: 25px;">${porcentaje1}%</label>
-    <br>
-
-    <label for="progress2" style="font-size: 40px; margin: 20px;">${key2}</label>
-    <progress id="progress2" class="progress-bar" value="${porcentaje2}" max="100" style="height: 30px;">${porcentaje2}%</progress>
-    <label for="progress2" style="font-size: 25px;">${porcentaje2}%</label>
-    <br>
-
-    <label for="progress3" style="font-size: 40px; margin: 20px;">${key3}</label>
-    <progress id="progress3" class="progress-bar" value="${porcentaje3}" max="100" style="height: 30px;">${porcentaje3}%</progress>
-    <label for="progress3" style="font-size: 25px;">${porcentaje3}%</label>
+    <div class="wrapper" style="justify-content: center;">
+    <table border="0">
+        <tr>
+            <td style="text-align: left;">
+                <label  for="progress1" style="font-size: 30px; margin: 20px;">${key1}</label>
+            </td>
+            <td>
+                <progress id="progress1" class="progress-bar" value="${porcentaje1}" max="100" style="height: 40px;">${porcentaje1}%</progress>
+            </td>
+            <td>
+                <label  for="progress1" style="font-size: 25px;">${porcentaje1}%</label>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: left;">
+                <label for="progress2" style="font-size: 30px; margin: 20px;">${key2}</label>
+            </td>
+            <td>
+                <progress id="progress2" class="progress-bar" value="${porcentaje2}" max="100" style="height: 40px;">${porcentaje2}%</progress>
+            </td>
+            <td>
+                <label for="progress2" style="font-size: 25px;">${porcentaje2}%</label>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: left;">
+                <label for="progress3" style="font-size: 30px; margin: 20px;">${key3}</label>
+            </td>
+            <td>
+                <progress id="progress3" class="progress-bar" value="${porcentaje3}" max="100" style="height: 40px;">${porcentaje3}%</progress>
+            </td>
+            <td>
+                <label for="progress3" style="font-size: 25px;">${porcentaje3}%</label>
+            </td>
+        </tr>
+    </table>
+    </div>
     `;
 }
 
