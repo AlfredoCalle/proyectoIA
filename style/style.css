@@ -189,3 +189,29 @@ button:active {
 		 margin-bottom: -120px;
 	}
 }
+
+
+/* Estilos para dispositivos móviles */
+@media only screen and (max-width: 600px) {
+    .responsive-table {
+        width: 100%;
+    }
+
+    .responsive-table td {
+        display: block;
+        text-align: center;
+    }
+
+    .responsive-table td label {
+        margin-bottom: 10px;
+    }
+
+    .responsive-table td progress {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .responsive-table td label:last-child {
+        margin-bottom: 0;
+    }
+}
