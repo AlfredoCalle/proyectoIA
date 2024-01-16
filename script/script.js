@@ -165,7 +165,7 @@ function mostrarResultados(labels) {
 
     document.getElementById('clasificador_contenedor').innerHTML = `
     <div class="wrapper" style="justify-content: center;">
-    <table border="0">
+    <table style="display: flex; flex-wrap: wrap; flex-direction: column;" border="0">
         <tr>
             <td style="text-align: left;">
                 <label  for="progress1" style="font-size: 30px; margin: 20px;">${key1}</label>
@@ -202,8 +202,6 @@ function mostrarResultados(labels) {
     </table>
     </div>
     `;
-
-    
 }
 
 function quitarResultados() {
